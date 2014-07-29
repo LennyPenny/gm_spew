@@ -49,7 +49,7 @@ SpewRetval_t spewHandler(SpewType_t spewType, const char *msg) {
 	endHookCall();
 	if (!LAU->IsType(-1, Type::NIL))
 	{
-		msg = "";
+		msg = ""; //just returning SPEW_CONTINUE will sometimes crash the game - this is just as good (hopefully)
 	}
 	LAU->Pop(3); //pop hook and Call from the stack
 
