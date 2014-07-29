@@ -24,11 +24,10 @@ void startHookCall() {
 }
 
 void endHookCall() {
-	LAU->Call(6, 0); //call hook.Call with our  6 args and 0 returns
-	LAU->Pop(2); //pop hook and Call from the stack
+	LAU->Call(6, 1); //call hook.Call with our  6 args and 0 returns
 }
 
-SpewRetval_t spewHandler(SpewType_t type, const char *msg) {
+SpewRetval_t spewHandler(SpewType_t spewType, const char *msg) {
 	#ifdef _WIN32
 		if (GetCurrentThreadId() != gThread)
 			return SPEW_CONTINUE;
@@ -43,13 +42,19 @@ SpewRetval_t spewHandler(SpewType_t type, const char *msg) {
 	
 
 	startHookCall();
-		LAU->PushNumber(type); //pushing hook args: type, msg, group, level
+		LAU->PushNumber(spewType); //pushing hook args: type, msg, group, level
 		LAU->PushString(msg);
 		LAU->PushString(GetSpewOutputGroup());
 		LAU->PushNumber(GetSpewOutputLevel());
 	endHookCall();
+	if (!LAU->IsType(-1, Type::NIL))
+	{
+		msg = "";
+	}
+	LAU->Pop(3); //pop hook and Call from the stack
 
-	return oldSpewFunc(type, msg); //pass it back to the default handler
+
+	return oldSpewFunc(spewType, msg); //pass it back to the default handler
 	
 }
 
