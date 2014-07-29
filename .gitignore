@@ -6,6 +6,9 @@
 *.user
 *.sln.docstates
 
+windows-vs2013/
+premake5.exe
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -13,7 +16,6 @@
 x64/
 build/
 bld/
-[Bb]in/
 [Oo]bj/
 
 # MSTest test Results
