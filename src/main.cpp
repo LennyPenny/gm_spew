@@ -24,7 +24,21 @@ void startHookCall() {
 }
 
 void endHookCall() {
-	LAU->Call(6, 1); //call hook.Call with our  6 args and 0 returns
+	LAU->Call(6, 1); //call hook.Call with our  6 args and 2 returns
+}
+
+const char *msgModification(const char *msg)
+{
+	if (!LAU->IsType(-1, Type::NIL)) 
+	{
+		if (LAU->IsType(-1, Type::STRING)) 
+		{
+			return LAU->GetString(-1); //make you able to modify the string
+		}
+
+		return ""; //just returning SPEW_CONTINUE will sometimes crash the game - this is just as good (hopefully)
+	}
+	return msg;
 }
 
 SpewRetval_t spewHandler(SpewType_t spewType, const char *msg) {
@@ -32,14 +46,9 @@ SpewRetval_t spewHandler(SpewType_t spewType, const char *msg) {
 		if (GetCurrentThreadId() != gThread)
 			return SPEW_CONTINUE;
 	#endif // _WIN32
-
 	
 	if (!msg) //checking if the message is valid
 		return SPEW_CONTINUE;
-
-	const Color *color = GetSpewOutputColor();
-
-	
 
 	startHookCall();
 		LAU->PushNumber(spewType); //pushing hook args: type, msg, group, level
@@ -47,12 +56,8 @@ SpewRetval_t spewHandler(SpewType_t spewType, const char *msg) {
 		LAU->PushString(GetSpewOutputGroup());
 		LAU->PushNumber(GetSpewOutputLevel());
 	endHookCall();
-	if (!LAU->IsType(-1, Type::NIL))
-	{
-		msg = ""; //just returning SPEW_CONTINUE will sometimes crash the game - this is just as good (hopefully)
-	}
-	LAU->Pop(3); //pop hook and Call from the stack
-
+	msg = msgModification(msg);
+	LAU->Pop(3); //popping hook, call and our return
 
 	return oldSpewFunc(spewType, msg); //pass it back to the default handler
 	

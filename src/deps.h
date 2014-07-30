@@ -4,4 +4,5 @@
 #endif // _WIN32
 
 #include "dbg.h"
+#include "Color.h"
 #include "gmod/Interface.h"
